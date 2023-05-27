@@ -6,10 +6,10 @@
 git clone https://github.com/Doge-is-Dope/uniswap-sample.git
 ```
 
-2. Navigate to a folder
+2. Navigate to the project
 
 ```bash
-cd name_of_the_folder
+cd uniswap-sample/name_of_the_folder
 ```
 
 3. Run the following commands for testing
