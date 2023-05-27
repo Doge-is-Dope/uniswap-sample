@@ -79,9 +79,9 @@ contract Arbitrage is IUniswapV2Callee, Ownable {
         callbackData.targetSwapPool = priceHigherPool; // higher price pool
         callbackData.borrowToken = token0; // the token borrowed from the pool: weth
         callbackData.debtToken = token1; // the token requires to be repayed: usdc
-        callbackData.borrowAmount = borrowETH;
-        callbackData.debtAmount = debtAmount;
-        callbackData.debtAmountOut = debtAmountOut;
+        callbackData.borrowAmount = borrowETH; // the amount of weth to be borrowed from the lower price pool
+        callbackData.debtAmount = debtAmount; // the amount of usdc to be repayed to the lower price pool
+        callbackData.debtAmountOut = debtAmountOut; // the amount of usdc can be swapped from the higher price pool
 
         // 2. flash swap (borrow WETH from lower price pool)
         IUniswapV2Pair(priceLowerPool).swap(borrowETH, 0, address(this), abi.encode(callbackData));
